@@ -9,7 +9,6 @@ import javafx.stage.Stage
 import org.bson.types.ObjectId
 import org.dba.woomera.Woomera.Companion.partHashMap
 import org.dba.woomera.Woomera.Companion.selectedTreeItem
-import org.dba.woomera.Woomera.Companion.newData
 
 class CreatePart {
     @FXML
@@ -56,7 +55,6 @@ class CreatePart {
             labelAddStatus.text = "New Part %s - %s created".format(code, description)
             labelAddStatus.style = "-fx-text-fill: status-good-color"
 
-            newData = true
         }
 
     }

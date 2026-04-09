@@ -44,7 +44,7 @@
     -fx-base: rgba(29, 57, 111, 255)
 }
 .label-success {
-    -fx-text-fill: #3cc136;
+    -fx-text-fill: #5dc136;
     -fx-font-family: 'Ink Free';
     -fx-font-size: 18;
 }

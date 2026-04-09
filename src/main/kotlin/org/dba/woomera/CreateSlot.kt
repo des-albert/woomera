@@ -11,7 +11,6 @@ import org.bson.types.ObjectId
 import org.dba.woomera.Woomera.Companion.partHashMap
 import org.dba.woomera.Woomera.Companion.slotHashMap
 import org.dba.woomera.Woomera.Companion.selectedTreeItem
-import org.dba.woomera.Woomera.Companion.newData
 
 class CreateSlot {
     @FXML
@@ -43,7 +42,7 @@ class CreateSlot {
         val name = textFieldSlotName.text
         val description = textFieldSlotDescription.text
         val type = CountGroup.selectedToggle.userData.toString()
-        var count = 0
+        var count: Int
 
         if (name.isEmpty() || type.isEmpty() || textFieldSlotCount.text.isEmpty()) {
             labelCreateSlotStatus.text = "Fields cannot be null"
@@ -70,8 +69,6 @@ class CreateSlot {
 
         labelCreateSlotStatus.text = "New Slot %s - %s created".format(name, description)
         labelCreateSlotStatus.style = "-fx-text-fill: status-good-color"
-
-        newData = true
     }
 
 

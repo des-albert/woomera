@@ -6,7 +6,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.mongodb.MongoWriteException
-import com.mongodb.client.model.Filters.eq
 import javafx.collections.FXCollections
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
@@ -37,8 +36,6 @@ import javafx.util.Callback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
@@ -56,9 +53,6 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.util.Optional
-import kotlin.code
-import kotlin.compareTo
-import kotlin.toString
 
 class Woomera {
 
@@ -101,7 +95,6 @@ class Woomera {
         val partHashMap: HashMap<String, Part> = HashMap()
         val slotHashMap: HashMap<String, Slot> = HashMap()
         var selectedTreeItem: TreeItem<Any>? = null
-        var newData: Boolean = false
     }
 
     private val dfPart: DataFormat = DataFormat("Part")
@@ -843,10 +836,8 @@ class Woomera {
 
     fun buttonQuitOnAction() {
         controllerScope.launch {
-            if (newData) {
-                saveParts(productParts)
-                saveSlots(productSlots)
-            }
+            saveParts(productParts)
+            saveSlots(productSlots)
 
             val stage: Stage = buttonQuit.scene.window as Stage
             stage.close()
@@ -858,11 +849,9 @@ class Woomera {
         withContext(Dispatchers.IO) {
             try {
                 val partCollection = MongoManage.database.getCollection<Part>(collection)
+                partCollection.drop()
                 for (part in partHashMap.values) {
-                    if (partCollection.find(eq("code", part.code)).firstOrNull() == null) {
                         partCollection.insertOne(part)
-                        logger.info("Part ${part.code} saved ")
-                    }
                 }
             } catch (e: MongoWriteException) {
                     logger.error("Error saving Parts Collection : ${e.message}")
@@ -875,11 +864,9 @@ class Woomera {
         withContext(Dispatchers.IO) {
             try {
                 val slotCollection = MongoManage.database.getCollection<Slot>(collection)
+                slotCollection.drop()
                 for (slot in slotHashMap.values) {
-                    if (slotCollection.find(eq("name", slot.name)).firstOrNull() == null) {
                         slotCollection.insertOne(slot)
-                        logger.info("Slot ${slot.name} saved ")
-                    }
                 }
             } catch (e: MongoWriteException) {
                 logger.error("Error saving Slots Collection : ${e.message}")
@@ -1100,20 +1087,19 @@ class Woomera {
         }
     }
 
-
     @FXML fun buttonBuildCollapseOnAction() {
         if (toggleBuild.isSelected) {
-            expandTreeView(buildTreeRootItem, true)
+            expandTreeView(buildTreeRootItem.children[0], true)
             toggleBuild.text = "collapse"
         } else {
-            expandTreeView(buildTreeRootItem, false)
+            expandTreeView(buildTreeRootItem.children[0], false)
             toggleBuild.text = "expand"
         }
     }
 
     private fun expandTreeView(item: TreeItem<Any>?, expand: Boolean) {
         if (item != null && !item.isLeaf) {
-            item.isExpanded = true
+            item.isExpanded = expand
         }
         for (child in item?.children!!) {
             expandTreeView(child, expand)
